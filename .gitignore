@@ -31,7 +31,10 @@
 *.out
 *.app
 
-
 # Mac OS X Garbage Files
 *.DS_Store
 *._DS_Store
+
+# vim swap files
+.*.swp
+
