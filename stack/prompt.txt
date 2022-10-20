@@ -1,0 +1,9 @@
+This problem was asked by Amazon.
+
+Implement a stack that has the following methods:
+
+1)  Push(val), which pushes an element onto the stack
+2)  Pop(), which pops off the returns the topmost element of the stack. If there are no elements in the stack, then it should throw an error or return null.
+3)  Max(), which returns the maximum value in the stack currently. If there are no elements in the stack, then it should throw an error or return null.
+
+Each method should run in constant time O(1).
