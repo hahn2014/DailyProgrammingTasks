@@ -1,13 +1,23 @@
-import random
-import sys
+import sys, os
 
-class Node():
-    def __init__(self, item):
-        self.item = item
-        self.parent = None
-        self.left = None
-        self.right = None
-        self.color = 1
+class Node(object):
+    def __init__(self, key):
+        self._key = key
+        self._parent = None
+        self._left = None
+        self._right = None
+        self._color = 1
+
+    key     = property(fget=lambda self: self._key, doc="The Node's Key/Value")
+    parent  = property(fget=lambda self: self._parent, doc="The Node's Parent")
+    left    = property(fget=lambda self: self._left, doc="The Node's Left Child")
+    right   = property(fget=lambda self: self._right, doc="The Node's Right Child")
+    color   = property(fget=lambda self: self._color, doc="1 for black, 0 for red")
+
+    def __str__(self):
+        return str(self.key) # string representation of the key/value
+
+
 
                         # Red Black Tree Guide
 # 1) Every Node has a color, either Red or Black
@@ -17,14 +27,16 @@ class Node():
 #       number of black nodes
 # 5) All leaf nodes are black nodes
 
-class RedBlackTree():
-    def __init__(self, item):
-        self.head = Node(0)
-        self.head.color = 0
-        self.head.left = None
-        self.head.right = None
-        self.root = self.head
+class RedBlackTree(object):
+    def __init__(self, create_node=Node):
+        self._nil = create_node(key=None)
+        self._root = self.nil
+        self._create_node = create_node
 
+    root = property(fget=lambda self: self._root, doc="The Tree's Root Node")
+    nil  = property(fget=lambda self: self._nil, doc="The Tree's nil Node")
+
+    
 
                                 # Insertion Psuedocode
 
@@ -51,10 +63,94 @@ class RedBlackTree():
 #   b) For Left Right Case (3-b-ii) and for Right Left Case (3-b-iv), swap colors of
 #         grandparent and inserted node after rotations
 
-    def insert(self, val):
-        print("hi")
+    def insert(self, key):
+        self.insertNode(self._create_node(key=key))
+        print("{} has been inserted into the tree.".format(key))
+
+    def insertNode(self, n):
+        y = self.nil
+        x = self.root
+        while x != self.nil:
+            y = x
+            if (n.key < x.key).any():
+                x = x.left
+            else:
+                x = x.right
+        n._parent = y
+        if y == self.nil:
+            self._root = n
+        elif (n.key < y.key).any():
+            y._left = n
+        else:
+            y._right = n
+        n._left = self.nil
+        n._right = self.nil
+        n._color = 0
+        self._insert_fix(n)
+
+    # restore red black properties after insertion
+    def _insert_fix(self, n):
+        while n.parent.color == 0: # continue loop until node's parent's color is no longer red
+            if n.parent == n.parent.parent.left:
+                y = n.parent.parent.right
+                if y.color == 0: # if uncle color is red
+                    n.parent._color = 1 # parent is black
+                    y._color = 1 # uncle is black
+                    n.parent.parent._color = 0 # grandparent is red
+                    n = n.parent.parent # make grandparent the current node
+                else: # if uncle color is black
+                    if n == n.parent.right:
+                        n = n.parent
+                        self._left_rotate(n)
+                    n.parent._color = 1 # parent is black
+                    n.parent.parent._color = 0 # grandparent is red
+                    self._right_rotate(n.parent.parent)
+            else:
+                y = n.parent.parent.left
+                if y.color == 0:
+                    n.parent._color = 1
+                    y._color = 1
+                    n.parent.parent._color = 0
+                    n = n.parent.parent
+                else:
+                    if n == n.parent.left:
+                        n = n.parent
+                        self._right_rotate(n)
+                    n.parent._color = 1
+                    n.parent.parent._color = 0
+                    self._left_rotate(n.parent.parent)
+        self._root._color = 1
 
 
+    def _left_rotate(self, x):
+        y = x.right
+        x._right = y.left
+        if y.left != self.nil:
+            y.left._parent = x
+        y._parent = x.parent
+        if x.parent == self.nil:
+            self._root = y
+        elif x == x.parent.left:
+            x.parent._left = y
+        else:
+            x.parent._right = y
+        y._left = x
+        x._parent = y
+
+    def _right_rotate(self, y):
+        x = y.left
+        y._left = x.right
+        if x.right != self.nil:
+            x.right._parent = y
+        x._parent = y.parent
+        if y.parent == self.nil:
+            self._root = x
+        elif y == y.parent.right:
+            y.parent._right = x
+        else:
+            y.parent._left = x
+        x._right = y
+        y._parent = x
 
                                 # Deletion Psuedocode
 
@@ -101,11 +197,38 @@ class RedBlackTree():
     def delete(self, val):
         print("nothing to see here.")
 
+    def printTree(self):
+        print("--- Printing Tree ---")
+        self._print_tree(self.root, "", True)
 
-
-def test():
-    print("Hello World")
+    def _print_tree(self, node, indent, last):
+        if node != self.nil:
+            sys.stdout.write(indent)
+            if last:
+                sys.stdout.write("R----")
+                indent += "    "
+            else:
+                sys.stdout.write("L----")
+                indent += "    "
+            s_color = "RED" if node.color == 0 else "BLACK"
+            print(str(node.key) + "(" + s_color + ")")
+            self._print_tree(node.left, indent, False)
+            self._print_tree(node.right, indent, True)
 
 
 if __name__ == '__main__':
-    test()
+    import numpy.random as R
+    R.seed(2)
+    size = 50
+    keys = R.randint(-50, 50, size=size)
+    tree = RedBlackTree()
+
+    for i in range(1,5):
+        tree.insert(R.randint(-50, 50, size=size))
+
+
+
+    tree.printTree()
+    # tree.insert(10)
+    # test_tree(tree)
+    # write_tree(t, 'tree')
