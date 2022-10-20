@@ -20,6 +20,10 @@
 *.mod
 *.smod
 
+# Byte-compiled / optimized / DLL Files
+__pycache__/
+*.py[cod]
+
 # Compiled Static libraries
 *.lai
 *.la
