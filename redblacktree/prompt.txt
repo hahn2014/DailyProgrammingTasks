@@ -1,0 +1,11 @@
+This prompt is of my own chosing
+
+Design a Red Black Tree data structure following the Geeks For Geeks pseudocode template.
+Worst case scenario runtime complexity should be O(log n)
+
+Features to include:
+Insertion
+Deletion
+Search
+Print
+Max/Min value
