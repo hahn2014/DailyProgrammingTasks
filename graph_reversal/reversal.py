@@ -45,6 +45,7 @@ class Graph(object):
             self._tail._prev = last
 
 def reverse(graph):
+    print("reversing graph order")
     rev = Graph()
     rev._head = graph._tail
     curr = graph._tail._prev
