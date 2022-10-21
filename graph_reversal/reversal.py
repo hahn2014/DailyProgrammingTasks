@@ -76,6 +76,7 @@ def test():
 if __name__ == "__main__":
     if ((len(sys.argv) - 1) >= 1):
         print("CL argument {}: {}".format(1, sys.argv[1]))
+        # intepret user input, attempting to create a graph from the list of nodes
         # globals()[sys.argv[1]]()
     else:
         test() # run the default application
