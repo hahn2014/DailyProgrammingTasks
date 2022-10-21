@@ -1,0 +1,6 @@
+This problem was asked by Yahoo
+
+
+Write and algorithm that computes the reversal of a directed graph. For example, if a graph G consists of A -> B -> C, then G' should be A <- B <- C.
+
+extra: write a user input intepreter for a graph input.
