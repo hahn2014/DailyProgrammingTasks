@@ -11,7 +11,23 @@ class Graph(object):
         self._head = None
         self._tail = None
         self._direction = 1 # 1 for right, default
-    
+
+    def print_reverse(self):
+        print("--- Reverse Printinging ---")
+        curr = self._tail
+        if curr is None: print("Graph is empty...")
+        while (curr):
+            print("{}".format(curr._key), end='')
+            if (curr._prev):
+                if (self._direction == 1): # walk right
+                    sys.stdout.write("->")
+                elif (self._direction == 0): #walk left
+                    sys.stdout.write("<-")
+                curr = curr._prev
+            else:
+                print("\n--- Printing Finished ---")
+                return
+
     def print(self):
         print("--- Printing Graph ---")
         curr = self._head
@@ -30,33 +46,45 @@ class Graph(object):
 
     # insert a new node to the graph at the end of the linked list (append)
     def insert(self, key):
-        new_node = Node(key) # set up new node with the insertion value
-        print("Adding {} to end of graph".format(key))
-        if self._head is None: # make sure the graph isn't empty
-            self._head = new_node # start the graph with a new head node
-            self._head._prev = None
-            self._tail = new_node # since there is only one value, head and tail are the same
+        new_node = Node(key=key) # set up new node with the insertion value
+        last = self._tail
+        new_node._next = None
+
+        if self._head is None: # verify the graph isn't empty before adding
+            new_node._prev = None # if so, define the tail and head nodes
+            new_node._next = None
+            self._head = new_node
+            self._tail = new_node
             return
-        else:
-            last = self._tail # insert new node at end of list in O(1) time by keeping track of
-            last._next = new_node # the tail of the linked list, and updating once a new node is
-            last._next._prev = last
-            self._tail = new_node # added, keeping insertion constant time.
-            self._tail._prev = last
+        # since we have a tail value, just shift to add a new node and update references
+        new_node._prev = last
+        last._next = new_node
+        self._tail = new_node
+
+        print("Adding {} to end of graph".format(key))
 
 def reverse(graph):
     print("reversing graph order")
-    rev = Graph()
-    rev._head = graph._tail
-    curr = graph._tail._prev
+    rev = Graph() # initialize the reversal graph
+    rev._head = graph._tail # set its head node to the tail node of the main graph
+    curr = graph._tail._prev # define curr to walk through the graph LL
+    rev._head._next = curr # set the reference points for the linked list on rev
+    rev._head._prev = None
+    step = rev._head._next # define step to walk through the rev graph
 
+    
     while (curr):
-        rev._next = curr
+        step = curr
+        step._next = curr._prev
+        step._prev = curr._next
         curr = curr._prev
-        if curr is None:
+
+        if not curr: # we have reached the end of the linked list
+            rev._tail = step._next
+            rev._tail._next = None
+            rev._tail._prev = step
             break
     
-    rev._tail = graph._head
     return rev
 
 def test():
@@ -70,8 +98,11 @@ def test():
     g.insert("E")
 
     g.print() # print the graph
-    r = reverse(g) # reverse the graph
-    r.print() # print the new reserved graph
+    g.print_reverse()
+
+    # attempt to reverse the graph
+    # r = reverse(g)
+    # r.print()
     
 
 if __name__ == "__main__":
